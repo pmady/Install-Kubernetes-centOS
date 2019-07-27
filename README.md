@@ -1,2 +1,2 @@
 # Install-Kubernetes-centOS
-Installing Kubernetes on CentOS using kubeadm
+Installing Kubernetes using kubeadm
