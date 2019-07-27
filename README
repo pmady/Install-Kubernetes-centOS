@@ -1,0 +1,43 @@
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > /tmp/get_helm.sh
+
+chmod 700 /tmp/get_helm.sh
+DESIRED_VERSION=v2.8.2 /tmp/get_helm.sh
+
+helm init --wait
+kubectl --namespace=kube-system create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+
+helm ls
+
+cd ~/
+git clone https://github.com/kubernetes/charts
+
+cd charts
+git checkout efdcffe0b6973111ec6e5e83136ea74cdbe6527d
+
+cd ../
+vi prometheus-values.yml
+
+Once creating above file(contents found in same folder) run below command.
+
+Run:
+helm install -f prometheus-values.yml charts/stable/prometheus --name prometheus --namespace prometheus
+
+Now create grafana-values.yml
+vi grafana-values.yml
+
+Once file is created run below command.
+RUN:
+helm install -f grafana-values.yml charts/stable/grafana/ --name grafana --namespace grafana
+
+Now create grafana-ext.yml
+vi grafana-ext.yml
+
+Then Run:
+kubectl apply -f grafana-ext.yml
+
+Check on the status of prometheus and grafana pods with below commands
+kubectl get pods -n prometheus
+kubectl get pods -n grafana
+
+When setting up your datasource in grafana, use this url:
+http://prometheus-server.prometheus.svc.cluster.local
