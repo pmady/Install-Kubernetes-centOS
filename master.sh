@@ -45,9 +45,10 @@ kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address Mast
 Save the token somewhere as it will be used to join slave nodes to the master
 
 ```
-sudo cp /etc/kubernetes/admin.conf $HOME/
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/admin.conf
-export KUBECONFIG=$HOME/admin.conf
+export KUBECONFIG=$HOME/.kube/config/admin.conf
 ```
 
 
