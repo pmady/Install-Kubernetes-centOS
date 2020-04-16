@@ -1,0 +1,133 @@
+Java:
+yum -y update
+yum install java-1.8.0-openjdk -y
+java -version
+update-alternatives --config java
+vim .bash_profile
+source .bash_profile
+
+
+Docker Installation:
+sudo yum install -y device-mapper-persistent-data lvm2;
+sudo yum-config-manager     --add-repo     https://download.docker.com/linux/centos/docker-ce.repo;
+sudo yum install -y docker-ce-18.09.5 docker-ce-cli-18.09.5 containerd.io;
+sudo systemctl start docker;
+sudo systemctl enable docker;
+docker version;
+sudo docker version;
+sudo usermod -aG docker $USER
+docker version;
+
+Jenkins: https://linuxize.com/post/how-to-install-jenkins-on-centos-7/
+
+JIRA: https://community.atlassian.com/t5/Jira-articles/How-to-run-Jira-in-a-docker-container/ba-p/752697
+
+Artifactory:
+yum -y update; 
+yum install java-1.8.0-openjdk -y; 
+wget https://bintray.com/jfrog/artifactory-pro-rpms/rpm -O bintray-jfrog-artifactory-pro-rpms.repo; 
+sudo mv bintray-jfrog-artifactory-pro-rpms.repo /etc/yum.repos.d/; 
+yum install jfrog-artifactory-pro -y; 
+systemctl start artifactory.service
+systemctl status artifactory.service
+
+service artifactory check
+
+
+
+ZIP
+
+mkdir -p /var/opt/jfrog/artifactory
+cd /var/opt/jfrog/artifactory
+wget https://jfrog.bintray.com/artifactory-pro/org/artifactory/pro/jfrog-artifactory-pro/6.9.6/jfrog-artifactory-pro-6.9.6.zip
+unzip jfrog-artifactory-pro-6.9.6.zip
+mv artifactory-pro-6.9.6/* .
+rm -rf jfrog-artifactory-pro-6.9.6.zip
+rm -rf artifactory-pro-6.9.6
+
+Terraform:
+sudo wget https://releases.hashicorp.com/terraform/0.12.23/terraform_0.12.23_linux_amd64.zip
+sudo unzip terraform_0.12.23_linux_amd64.zip
+which terraform
+terraform -v
+
+Packer:
+sudo wget https://releases.hashicorp.com/packer/1.5.4/packer_1.5.4_linux_amd64.zip
+sudo unzip packer_1.5.4_linux_amd64.zip
+which packer
+packer version
+
+Sonarqube: sonarqube server + sonarqube scanner on jenkins server (configure on Global config -home scanner) + admin token (configure sonar server)
+
+
+Kubernetes:
+Master:
+hostnamectl set-hostname 'k8s-master'
+exec bash
+setenforce 0
+sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+
+modprobe br_netfilter
+echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+
+swapoff -a
+
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+
+yum install kubeadm docker -y
+
+systemctl restart docker && systemctl enable docker
+systemctl  restart kubelet && systemctl enable kubelet
+
+kubeadm init
+
+{copy the kubeadm join command}
+
+export kubever=$(kubectl version | base64 | tr -d '\n')
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+
+
+Worker:
+
+hostnamectl set-hostname 'k8s-master'
+exec bash
+setenforce 0
+sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+
+modprobe br_netfilter
+echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+
+swapoff -a
+
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+
+yum install kubeadm docker -y
+
+systemctl restart docker && systemctl enable docker
+systemctl  restart kubelet && systemctl enable kubelet
+
+kubeadm join --token a3bd48.1bc42347c3b35851 192.168.1.30:6443
+
+
+helm:
+
+
+Istio:
